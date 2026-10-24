@@ -1,0 +1,14 @@
+{% extends "bibliotheque/public/base.html" %}
+{% block contenu %}
+<div class="container py-5" style="max-width:760px">
+  <h1 class="mb-3">Cotisation d’adhésion</h1>
+  <p>Montant mensuel : <strong>{{ montant }} FCFA</strong>. Effectuez le transfert vers le numéro officiel de la bibliothèque, puis déclarez la référence exacte du reçu ci-dessous.</p>
+  {% if orange_money_numero or mtn_momo_numero %}<div class="card card-body mb-3"><h2 class="h6">Numéros de paiement de la bibliothèque</h2>{% if orange_money_numero %}<p class="mb-1"><strong>Orange Money :</strong> {{ orange_money_numero }}</p>{% endif %}{% if mtn_momo_numero %}<p class="mb-0"><strong>MTN Mobile Money :</strong> {{ mtn_momo_numero }}</p>{% endif %}</div>{% endif %}
+  <div class="alert alert-warning">Votre déclaration ne confirme pas le paiement. Présentez-vous à la bibliothèque avec votre pièce d’identité et le reçu Mobile Money. L’adhésion ne sera activée qu’après vérification par le personnel.</div>
+  <form method="post" class="card card-body shadow-sm">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" type="submit">Déclarer ma cotisation</button>
+    <a class="btn btn-link" href="{% url 'mon_compte' %}">Retour au compte</a>
+  </form>
+</div>
+{% endblock %}

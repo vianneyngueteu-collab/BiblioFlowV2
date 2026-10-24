@@ -1,0 +1,12 @@
+{% extends "bibliotheque/base.html" %}
+{% block contenu %}
+<div class="container-fluid py-4">
+<h1>Vérification des cotisations</h1>
+<p>Accès direct aux déclarations en attente. Pour activer une adhésion, cochez les deux contrôles après vérification réelle du transfert et de la pièce d’identité en présentiel.</p>
+<div class="table-responsive"><table class="table table-striped align-middle">
+<thead><tr><th>Adhérent</th><th>Montant</th><th>Opérateur</th><th>Téléphone payeur</th><th>Référence</th><th>Date</th><th>Contrôles et action</th></tr></thead><tbody>
+{% for c in cotisations %}<tr><td>{{ c.adherent.get_full_name }}<br><small>{{ c.adherent.numero_carte }}</small></td><td>{{ c.montant }} FCFA</td><td>{{ c.get_operateur_display }}</td><td>{{ c.telephone_payeur }}</td><td>{{ c.reference_transaction }}</td><td>{{ c.date_declaration|date:"d/m/Y H:i" }}</td><td>
+{% if c.statut == "en_attente" %}<form method="post" class="d-grid gap-2">{% csrf_token %}<input type="hidden" name="cotisation_id" value="{{ c.pk }}"><label class="small d-flex gap-2 align-items-start"><input class="form-check-input mt-1" type="checkbox" name="paiement_verifie"><span>Transfert réellement reçu sur le compte marchand</span></label><label class="small d-flex gap-2 align-items-start"><input class="form-check-input mt-1" type="checkbox" name="identite_verifiee"><span>Pièce d’identité vérifiée en présentiel</span></label><div class="d-flex flex-wrap gap-2"><button class="btn btn-success btn-sm" name="action" value="valider">Confirmer et activer</button><button class="btn btn-outline-danger btn-sm" name="action" value="refuser">Refuser</button></div></form>{% else %}<strong>{{ c.get_statut_display }}</strong>{% if c.validee_par %}<div class="small text-muted">Par {{ c.validee_par.get_full_name }}{% if c.date_validation %}, le {{ c.date_validation|date:"d/m/Y H:i" }}{% endif %}</div>{% endif %}{% endif %}
+</td></tr>{% empty %}<tr><td colspan="7">Aucune cotisation déclarée.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}

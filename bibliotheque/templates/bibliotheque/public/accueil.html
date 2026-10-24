@@ -1,0 +1,55 @@
+{% extends "bibliotheque/public/base.html" %}{% load biblio_extras %}{% block hero %}
+<header class="hero hero-split">
+  <div class="container"><div class="hero-grid">
+    <div class="hero-copy">
+      <h1>Trouvez votre prochain livre.</h1>
+      <p class="hero-lead">Empruntez gratuitement ou achetez en ligne, puis retirez votre commande au comptoir ou faites-vous livrer.</p>
+      <form action="{% url 'catalogue' %}" class="hero-search" role="search"><label for="q-accueil" class="visually-hidden">Rechercher dans le catalogue</label>
+        <input id="q-accueil" name="q" placeholder="Un titre, un auteur, un sujet"><button class="btn btn-sun">Rechercher</button></form>
+      <p class="hero-trust"><i class="fa-solid fa-circle-check"></i>{{ nb_livres }} titres au catalogue, {{ nb_dispo }} exemplaires en rayon aujourd’hui</p>
+      <div class="hero-actions"><a href="{% url 'catalogue' %}" class="btn btn-ghost">Voir tout le catalogue</a><a href="{% url 'suivi_achat' %}" class="btn btn-ghost">Suivre une commande</a></div>
+    </div>
+    <div class="wall" aria-label="Quelques livres du catalogue">{% for l in nouveautes|slice:":4" %}<a class="wall-book" href="{% url 'livre_detail' l.pk %}" title="{{ l.titre }}"><img class="cover-img" src="{{ l|couverture }}" alt="Couverture illustrée de {{ l.titre }}" draggable="false"></a>{% endfor %}</div>
+  </div></div>
+  <div class="shelf-wrap" aria-label="Derniers livres arrivés, à faire glisser">
+    <div class="shelf" role="list">{% for l in nouveautes %}<a role="listitem" class="spine t{{ l|teinte }}" style="{{ l|dos }};--i:{{ forloop.counter0 }}" href="{% url 'livre_detail' l.pk %}" title="{{ l.titre }}, {{ l.auteur }}" draggable="false"><span>{{ l.titre }}</span></a>{% endfor %}</div>
+  </div>
+</header>
+{% endblock %}{% block contenu %}
+<section class="section" style="padding-top:2rem">
+  <h2 class="section-h">Parcourir par catégorie</h2>
+  <div class="d-flex flex-wrap gap-2 mt-4">{% for c in categories %}<a class="cat" href="{% url 'catalogue' %}?cat={{ c.categorie|urlencode }}">{{ c.categorie }} <span>{{ c.n }}</span></a>{% endfor %}</div>
+</section>
+
+<section class="section">
+  <h2 class="section-h">Tout ce qu’il faut pour lire</h2>
+  <p class="section-lead">Un seul panier pour emprunter et acheter, sans détour.</p>
+  <div class="features">
+    <div class="feature"><div class="feature-ico"><i class="fa-solid fa-book-bookmark"></i></div><h3>Emprunter</h3><p>Gratuit pour les adhérents, {{ p.duree_pret_jours }} jours, prolongeable.</p></div>
+    <div class="feature"><div class="feature-ico"><i class="fa-solid fa-tag"></i></div><h3>Acheter sans compte</h3><p>Commandez les livres en vente sans vous inscrire.</p></div>
+    <div class="feature"><div class="feature-ico"><i class="fa-solid fa-store"></i></div><h3>Retrait ou livraison</h3><p>Récupérez au comptoir, ou recevez chez vous si la livraison est proposée.</p></div>
+    <div class="feature"><div class="feature-ico"><i class="fa-solid fa-route"></i></div><h3>Suivi de commande</h3><p>Suivez chaque étape avec votre référence, connecté ou non.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="d-flex justify-content-between align-items-baseline mb-4"><h2 class="section-h is-left">Derniers arrivés</h2><a href="{% url 'catalogue' %}" class="fw-semibold text-decoration-none">Voir tout le catalogue</a></div>
+  <div class="row g-4">{% for l in nouveautes %}<div class="col-6 col-md-4 col-xl-3">{% include "bibliotheque/public/_carte_livre.html" %}</div>{% endfor %}</div>
+</section>
+
+<section class="section">
+  <h2 class="section-h">Comment ça marche</h2>
+  <p class="section-lead">De l’inscription au retour du livre, en quatre étapes.</p>
+  <div class="steps">
+    <div class="step-card"><div class="step-n">1</div><h3>Inscrivez-vous</h3><p>Créez votre compte en ligne{% if p.validation_adhesion_requise %}, puis faites valider votre adhésion à la bibliothèque{% endif %}.</p><div class="step-checks"><span><i class="fa-solid fa-circle-check"></i>Quelques minutes</span><span><i class="fa-solid fa-circle-check"></i>Carte d’adhérent</span></div></div>
+    <div class="step-card"><div class="step-n">2</div><h3>Commandez</h3><p>Ajoutez au panier les livres à emprunter (adhérents) ou à acheter (avec ou sans compte), puis envoyez votre commande.</p><div class="step-checks"><span><i class="fa-solid fa-circle-check"></i>Emprunt</span><span><i class="fa-solid fa-circle-check"></i>Achat</span></div></div>
+    <div class="step-card"><div class="step-n">3</div><h3>Récupérez</h3><p>Le bibliothécaire prépare votre exemplaire. Retirez-le au comptoir ou recevez-le si la livraison est proposée.</p><div class="step-checks"><span><i class="fa-solid fa-circle-check"></i>Retrait au comptoir</span><span><i class="fa-solid fa-circle-check"></i>Livraison</span></div></div>
+    <div class="step-card"><div class="step-n">4</div><h3>Rendez</h3><p>{{ p.duree_pret_jours }} jours de prêt, prolongeables. Passé ce délai, {{ p.amende_par_jour|floatformat:0 }} FCFA par jour de retard.</p><div class="step-checks"><span><i class="fa-solid fa-circle-check"></i>Prolongation en ligne</span></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="cta-card"><h2>Votre prochaine lecture vous attend.</h2><p>Parcourez le catalogue et ajoutez vos premiers livres au panier.</p>
+    <a href="{% url 'catalogue' %}" class="btn btn-white btn-lg">Parcourir le catalogue</a></div>
+</section>
+{% endblock %}
